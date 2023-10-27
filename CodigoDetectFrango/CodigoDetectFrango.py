@@ -150,56 +150,6 @@
 
 ##### CÓDIGO USANDO TRACKING DO YOLOV8
 
-#import cv2
-#from ultralytics import YOLO
-#from collections import defaultdict
-#import os
-#import numpy as np
-#os.environ["KMP_DUPLICATE_LIB_OK"]="TRUE"
-
-#model = YOLO("C:/ImageDetection/ImageLabeling2/yolov8m_custom2.pt")
-#video_path = "C:/ImageDetection/Segmentation1/Frango/hiv00001.mp4"
-#cap = cv2.VideoCapture(video_path)
-
-## Store the track history
-#track_history = defaultdict(lambda: [])
-
-#while True:
-#    ret, frame = cap.read()
-#    if not ret:
-#        break
-#    results = model.track(frame, persist=True, show_labels=False, show_conf=False)
-#    # Get the boxes and track IDs
-#    boxes = results[0].boxes.xywh.cpu()
-#    track_ids = results[0].boxes.id.int().cpu().tolist()
-
-#    for box, track_id in zip(boxes, track_ids):
-#        x, y, w, h = box
-    
-#        x1, y1,x2, y2 = x-w/2, y-h/2, x+w/2, y+h/2
-#        cv2.rectangle(frame, (int(x1),int(y1)),(int(x2),int(y2)), (0, 0, 255), 1)
-#        t_size = cv2.getTextSize(str(track_id), 0, fontScale=1 / 1, thickness=1)[0]
-#        cv2.rectangle(frame, (int(x1), int(y1) - t_size[1] - 3),(int(x1) + t_size[0], int(y1)+3),  (0,255,0),-1)
-#        cv2.putText(frame, str(track_id), (int(x1), int(y1) - 2), 0, 1 / 1,[0,0,0], thickness=2, lineType=cv2.LINE_AA)
-
-#        track = track_history[track_id]
-#        track.append((float(x), float(y)))  
-#        if len(track) > 30: 
-#            track.pop(0)
-
-#        points = np.hstack(track).astype(np.int32).reshape((-1, 1, 2))
-#        cv2.polylines(frame, [points], isClosed=False, color=(230, 0, 0), thickness=10)
-
-#    cv2.imshow("Detections", frame)
-#    if cv2.waitKey(1) & 0xFF == ord('q'):
-#        break
-
-#cap.release()
-#cv2.destroyAllWindows()
-
-
-
-
 import cv2
 from ultralytics import YOLO
 from collections import defaultdict
@@ -210,27 +160,35 @@ os.environ["KMP_DUPLICATE_LIB_OK"]="TRUE"
 model = YOLO("C:/ImageDetection/ImageLabeling2/yolov8m_custom2.pt")
 video_path = "C:/ImageDetection/Segmentation1/Frango/hiv00001.mp4"
 cap = cv2.VideoCapture(video_path)
-first=True
+
+# Store the track history
+track_history = defaultdict(lambda: [])
 
 while True:
     ret, frame = cap.read()
     if not ret:
         break
+    results = model.track(frame, persist=True, show_labels=False, show_conf=False)
+    # Get the boxes and track IDs
+    boxes = results[0].boxes.xywh.cpu()
+    track_ids = results[0].boxes.id.int().cpu().tolist()
 
-    if first:
-        results = model(frame)
-        boxes = results[0].boxes.xywh.cpu()
-        tracker = cv2.TrackerGOTURN_create()
-        
+    for box, track_id in zip(boxes, track_ids):
+        x, y, w, h = box
+    
+        x1, y1,x2, y2 = x-w/2, y-h/2, x+w/2, y+h/2
+        cv2.rectangle(frame, (int(x1),int(y1)),(int(x2),int(y2)), (0, 0, 255), 1)
+        t_size = cv2.getTextSize(str(track_id), 0, fontScale=1 / 1, thickness=1)[0]
+        cv2.rectangle(frame, (int(x1), int(y1) - t_size[1] - 3),(int(x1) + t_size[0], int(y1)+3),  (0,255,0),-1)
+        cv2.putText(frame, str(track_id), (int(x1), int(y1) - 2), 0, 1 / 1,[0,0,0], thickness=2, lineType=cv2.LINE_AA)
 
-        for box in boxes:
-            x, y, w, h = box
-            x1, y1,x2, y2 = x-w/2, y-h/2, x+w/2, y+h/2
-#            ok=tracker.init(frame, (int(x1),int(y1),int(x2),int(y2)))
-            cv2.rectangle(frame, (int(x1),int(y1)),(int(x2),int(y2)), (0, 0, 255), 1)                                                                                           
-        first=False
-    else:
-        print('khjgk')
+        track = track_history[track_id]
+        track.append((float(x), float(y)))  
+        if len(track) > 30: 
+            track.pop(0)
+
+        points = np.hstack(track).astype(np.int32).reshape((-1, 1, 2))
+        cv2.polylines(frame, [points], isClosed=False, color=(230, 0, 0), thickness=10)
 
     cv2.imshow("Detections", frame)
     if cv2.waitKey(1) & 0xFF == ord('q'):
@@ -238,3 +196,70 @@ while True:
 
 cap.release()
 cv2.destroyAllWindows()
+
+
+
+
+#import cv2
+#from ultralytics import YOLO
+#from collections import defaultdict
+#import os
+#import numpy as np
+#os.environ["KMP_DUPLICATE_LIB_OK"]="TRUE"
+
+#model = YOLO("C:/ImageDetection/ImageLabeling2/yolov8m_custom2.pt")
+#video_path = "C:/ImageDetection/Segmentation1/Frango/hiv00001.mp4"
+#cap = cv2.VideoCapture(video_path)
+#first=True
+#bboxes = []
+
+#tracker = cv2.legacy.TrackerCSRT_create()
+#multiTracker = cv2.legacy.MultiTracker_create()
+
+#while True:
+#    ret, frame = cap.read()
+#    if not ret:
+#        break
+
+#    if first:
+#        results = model(frame)
+#        boxes = results[0].boxes.xywh.cpu()
+
+#        #ret = tracker.init(frame, (2,100,50,200))
+
+#        for box in boxes:
+#            x, y, w, h = box
+#            x1, y1,x2, y2 = x-w/2, y-h/2, x+w/2, y+h/2
+#            bbox = (int(x1),int(y1),int(w),int(h))
+#            bboxes.append(bbox)
+#            #multiTracker.add(tracker, frame, bbox)
+#            #ret=tracker.init(frame, (int(x1),int(y1),int(w),int(h)))
+#            #cv2.rectangle(frame, (int(x1),int(y1)),(int(x2),int(y2)), (0, 0, 255), 1) 
+            
+#        first=False
+
+#        for bbox in bboxes:
+#            multiTracker.add(tracker, frame, bbox)
+
+#        for i, newbox in enumerate(bboxes):
+#            p1 = (int(newbox[0]), int(newbox[1]))
+            
+#            p2 = (int(newbox[0] + newbox[2]), int(newbox[1] + newbox[3]))
+#            cv2.rectangle(frame, p1, p2, (255,0,0), 2, 1)
+#    else:
+#        # get updated location of objects in subsequent frames
+#        success, boxes = multiTracker.update(frame)
+        
+#        # draw tracked objects
+#        for i, newbox in enumerate(boxes):
+#            p1 = (int(newbox[0]), int(newbox[1]))
+            
+#            p2 = (int(newbox[0] + newbox[2]), int(newbox[1] + newbox[3]))
+#            cv2.rectangle(frame, p1, p2, (255,0,0), 2, 1)
+
+#    cv2.imshow("Detections", frame)
+#    if cv2.waitKey(1) & 0xFF == ord('q'):
+#        break
+
+#cap.release()
+#cv2.destroyAllWindows()
