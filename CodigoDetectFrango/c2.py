@@ -17,6 +17,8 @@ class Galinha:
         self.tempo_parado = 0
         self.pos_x = pos_x
         self.pos_y = pos_y
+        self.tempo_comendo = 0
+        self.tempo_bebendo = 0
 
     def atualizar_posicao(self, new_pos_x, new_pos_y):
         # Calcula a distância percorrida desde a última atualização
