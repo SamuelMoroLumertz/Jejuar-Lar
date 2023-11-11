@@ -1,6 +1,7 @@
 import numpy as np
 import cv2
 import glob
+import os
 
 chessBoardSize = (6,6)
 frameSize = (640,360)
@@ -36,7 +37,7 @@ def calibration():
     objpoints = [] 
     imgpoints = [] 
 
-    images = glob.glob('imagens/*.png')
+    images = glob.glob('imagens/cameraSteel/*.jpg')
 
     for image in images:
         
@@ -62,14 +63,30 @@ def calibration():
     print("Camera matrix: \n", mtx)
     print("Distortion coefficients: \n", dist)
 
-    img = cv2.imread('imagens/chessboard2.png')
-    h,  w = img.shape[:2]
-    newCameraMtx, roi = cv2.getOptimalNewCameraMatrix(mtx, dist, (w,h), 1, (w,h))
+    output_folder = 'imagens/resultados'
 
-    dst = cv2.undistort(img, mtx, dist, None, newCameraMtx)
-    x, y, w, h = roi
-    dst = dst[y:y+h, x:x+w]
-    cv2.imwrite('result.png', dst)
+    if not os.path.exists(output_folder):
+        os.makedirs(output_folder)
+
+    for image_path in images:
+        img = cv2.imread(image_path)
+        h,  w = img.shape[:2]
+        newCameraMtx, roi = cv2.getOptimalNewCameraMatrix(mtx, dist, (w,h), 1, (w,h))
+
+        dst = cv2.undistort(img, mtx, dist, None, newCameraMtx)
+        x, y, w, h = roi
+        dst = dst[y:y+h, x:x+w]
+
+        output_path = os.path.join(output_folder, os.path.basename(image_path))
+        cv2.imwrite(output_path, dst)
+    # img = cv2.imread('imagens/cameraSteel/chessBoard.jpg')
+    # h,  w = img.shape[:2]
+    # newCameraMtx, roi = cv2.getOptimalNewCameraMatrix(mtx, dist, (w,h), 1, (w,h))
+    #
+    # dst = cv2.undistort(img, mtx, dist, None, newCameraMtx)
+    # x, y, w, h = roi
+    # dst = dst[y:y+h, x:x+w]
+    # cv2.imwrite('imagens/resultados/resultado.jpg', dst)
 
 #capture_photo()
 calibration()
