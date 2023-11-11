@@ -11,7 +11,7 @@
     <OutputPath>.</OutputPath>
     <Name>CodigoDetectFrango</Name>
     <RootNamespace>CodigoDetectFrango</RootNamespace>
-    <InterpreterId>Global|PythonCore|3.9</InterpreterId>
+    <InterpreterId>CondaEnv|CondaEnv|yolov8_segmentation1</InterpreterId>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <DebugSymbols>true</DebugSymbols>
@@ -22,7 +22,7 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="c2.py" />
+    <Compile Include="CodigoDetectFrango.py" />
   </ItemGroup>
   <ItemGroup>
     <InterpreterReference Include="CondaEnv|CondaEnv|yolov8_segmentation1" />

@@ -4,7 +4,7 @@ import glob
 import os
 
 chessBoardSize = (6,6)
-frameSize = (640,360)
+frameSize = (1280,720)
 
 def capture_photo():
     cap = cv2.VideoCapture(1) 
@@ -37,7 +37,7 @@ def calibration():
     objpoints = [] 
     imgpoints = [] 
 
-    images = glob.glob('imagens/cameraSteel/*.jpg')
+    images = glob.glob('imagens/camera320WS/*.jpg')
 
     for image in images:
         
@@ -59,11 +59,9 @@ def calibration():
     cv2.destroyAllWindows()
 
     ret, mtx, dist, rvecs, tvecs = cv2.calibrateCamera(objpoints, imgpoints, frameSize, None, None)
-    
-    print("Camera matrix: \n", mtx)
-    print("Distortion coefficients: \n", dist)
 
-    output_folder = 'imagens/resultados'
+
+    output_folder = 'imagens/camera320WS/Resultados'
 
     if not os.path.exists(output_folder):
         os.makedirs(output_folder)
@@ -71,14 +69,26 @@ def calibration():
     for image_path in images:
         img = cv2.imread(image_path)
         h,  w = img.shape[:2]
-        newCameraMtx, roi = cv2.getOptimalNewCameraMatrix(mtx, dist, (w,h), 1, (w,h))
+       # newCameraMtx, roi = cv2.getOptimalNewCameraMatrix(mtx, dist, (w,h), 1, (w,h))
 
+        newCameraMtx = mtx
         dst = cv2.undistort(img, mtx, dist, None, newCameraMtx)
-        x, y, w, h = roi
-        dst = dst[y:y+h, x:x+w]
+
+        # dst = cv2.undistort(img, mtx, dist, None, newCameraMtx)
+        # x, y, w, h = roi
+        # dst = dst[y:y+h, x:x+w]
 
         output_path = os.path.join(output_folder, os.path.basename(image_path))
         cv2.imwrite(output_path, dst)
+
+    output_file = 'imagens/camera320WS/Resultados/calibration_results.txt'
+
+    with open(output_file, 'w') as f:
+        f.write("Camera matrix:\n")
+        np.savetxt(f, mtx, fmt='%.8f')
+        f.write("\nDistortion coefficients:\n")
+        np.savetxt(f, dist, fmt='%.8f')
+
     # img = cv2.imread('imagens/cameraSteel/chessBoard.jpg')
     # h,  w = img.shape[:2]
     # newCameraMtx, roi = cv2.getOptimalNewCameraMatrix(mtx, dist, (w,h), 1, (w,h))
