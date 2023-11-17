@@ -122,11 +122,10 @@ mtx = [
 dist = [-0.34945005, 0.18133822, 0.00095096, 0.00142214, -0.12601488]
 
 dst = cv2.undistort(resized, np.array(mtx), np.array(dist), None, np.array(mtx))
-dst2 = cv2.resize(dst, (1920,1080), interpolation=cv2.INTER_AREA)
 
 cv2.namedWindow("resized", cv2.WINDOW_NORMAL)
 cv2.imshow("resized", dst)
 cv2.namedWindow("normal", cv2.WINDOW_NORMAL)
-cv2.imshow("normal", dst2)
+cv2.imshow("normal", img)
 cv2.waitKey(0)
 cv2.destroyAllWindows()
