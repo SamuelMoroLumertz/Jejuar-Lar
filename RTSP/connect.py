@@ -6,7 +6,7 @@ cameraDireita = "rtsp://camlab14b:senhasegura@10.57.1.19:554/stream1"
 cameraEsquerda = "rtsp://camlab14b:senhasegura@10.57.1.20:554/stream2"
 cameraAtual = cameraEsquerda
 
-janela = (1024, 768)
+janela = (960, 540)
 video = cv2.VideoCapture(cameraAtual)
 
 # Get screen size
@@ -35,7 +35,7 @@ while True:
         if cameraAtual == cameraEsquerda:
             cameraAtual = cameraDireita
         else:
-            current_camera = cameraEsquerda
+            cameraAtual = cameraEsquerda
         video.release()
         video = cv2.VideoCapture(cameraAtual)
 
